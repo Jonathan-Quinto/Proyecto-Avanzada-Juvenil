@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Avanzada Juvenil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #D32F2F;
+            --primary-dark: #B71C1C;
+            --primary-light: #E53935;
+            --dark: #151922;
+            --darker: #0E121B;
+            --light: #323441;
+            --text-light: #FFFFFF;
+            --text-gray: #E0E0E0;
+            --success: #4CAF50;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--darker);
+            color: var(--text-light);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .register-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .register-hero {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-hero::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .register-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            width: 120px;
+            margin-bottom: 2rem;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 500px;
+            margin-bottom: 2rem;
+            z-index: 1;
+        }
+
+        .register-form-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            background-color: var(--dark);
+        }
+
+        .register-form {
+            width: 100%;
+            max-width: 500px;
+            background: var(--light);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .form-subtitle {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 90%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            background: var(--dark);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 70%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: var(--text-light);
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-icon {
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 992px) {
+            .register-container {
+                flex-direction: column;
+            }
+            
+            .register-hero {
+                padding: 3rem 1rem;
+            }
+            
+            .register-form-container {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-hero">
+            <img src="logo.png" alt="Avanzada Juvenil" class="logo">
+            <h1 class="hero-title">Únete a nuestra comunidad</h1>
+            <p class="hero-subtitle">Forma parte de Avanzada Juvenil y vive una experiencia transformadora junto a otros jóvenes comprometidos con su fe.</p>
+        </div>
+        
+        <div class="register-form-container">
+            <form class="register-form" id="registrationForm">
+                <div class="progress-steps">
+                    <div class="step active"><span>1</span></div>
+                    <div class="step"><span>2</span></div>
+                    <div class="step"><i class="fas fa-check step-icon"></i></div>
+                </div>
+                
+                <div class="form-header">
+                    <h2 class="form-title">Crea tu cuenta</h2>
+                    <p class="form-subtitle">Completa tus datos para comenzar</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fullName" class="form-label">Nombre completo</label>
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="fullName" class="form-control" placeholder="Ej: Juan Pérez" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Correo electrónico</label>
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="email" class="form-control" placeholder="tucorreo@ejemplo.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone" class="form-label">Teléfono (opcional)</label>
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="tel" id="phone" class="form-control" placeholder="+507 6000 0000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="age" class="form-label">Edad</label>
+                    <i class="fas fa-birthday-cake input-icon"></i>
+                    <input type="number" id="age" class="form-control" placeholder="18" min="12" max="35">
+                </div>
+                
+                <div class="form-group">
+                    <label for="interests" class="form-label">Áreas de interés</label>
+                    <i class="fas fa-heart input-icon"></i>
+                    <select id="interests" class="form-control" required>
+                        <option value="" disabled selected>Selecciona tus intereses</option>
+                        <option value="worship">Adoración y música</option>
+                        <option value="bible">Estudio bíblico</option>
+                        <option value="service">Servicio comunitario</option>
+                        <option value="missions">Misiones</option>
+                        <option value="all">Todas las áreas</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label class="form-label">¿Cómo nos conociste?</label>
+                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="radio" name="referral" value="friend">
+                            <span>Amigo/Familiar</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="radio" name="referral" value="social">
+                            <span>Redes sociales</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="radio" name="referral" value="event">
+                            <span>Evento</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" style="margin-top: 0.2rem;">
+                        <span>Acepto recibir información sobre eventos y actividades</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-user-plus"></i> Registrarme
+                </button>
+                
+                <div class="form-footer">
+                    ¿Ya tienes una cuenta? <a href="#">Inicia sesión aquí</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simular envío del formulario
+            const submitBtn = document.querySelector('.btn-submit');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                alert('¡Registro exitoso! Bienvenido a Avanzada Juvenil');
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Registro completado';
+                submitBtn.style.background = 'var(--success)';
+                
+                // Redirigir después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = "Inicio.html";
+                }, 2000);
+            }, 2000);
+            document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const age = document.getElementById('age').value;
+
+    if (!email.includes('@')) {
+        alert('Por favor, ingresa un correo electrónico válido.');
+        return;
+    }
+
+    if (age < 12 || age > 35) {
+        alert('La edad debe estar entre 12 y 35 años.');
+        return;
+    }
+
+    // Si todo está bien, enviar el formulario
+    this.submit();
+});
+        });
+    </script>
+</body>
+</html>
