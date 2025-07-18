@@ -364,37 +364,31 @@
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Simular envío del formulario
-            const submitBtn = document.querySelector('.btn-submit');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
-            submitBtn.disabled = true;
-            
-            // Validación simple
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            if (!email.includes('@') || password.length < 6) {
-                setTimeout(() => {
-                    alert('Correo electrónico o contraseña incorrectos');
-                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
-                    submitBtn.disabled = false;
-                }, 1000);
-                return;
-            }
-            
-            // Simular autenticación exitosa
-            setTimeout(() => {
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Sesión iniciada';
-                submitBtn.style.background = 'var(--success)';
-                
-                // Redirigir después de 1 segundo
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 1000);
-            }, 2000);
-        });
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const submitBtn = document.querySelector('.btn-submit');
+
+    // Validación básica
+    if (!email.includes('@') || password.length < 6) {
+        alert('Por favor, ingresa credenciales válidas');
+        return;
+    }
+
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
+    submitBtn.disabled = true;
+    
+    setTimeout(() => {
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> Sesión iniciada';
+        submitBtn.style.background = 'var(--success)';
+        
+        // Redirigir a la página de inicio
+        setTimeout(() => {
+            window.location.href = "{{ url_for('inicio') }}";
+        }, 1500);
+    }, 2000);
+});
     </script>
 </body>
 </html>

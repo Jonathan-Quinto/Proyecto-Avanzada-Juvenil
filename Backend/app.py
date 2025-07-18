@@ -1,13 +1,100 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from login import login_usuario
-from registro_usuario import registrar_usuario
-from subir_imagen import actualizar_imagen_usuario
-import os
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from db_connection import get_connection  # Importamos desde tu archivo externo
 from datetime import datetime
+import os
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.secret_key = os.urandom(24)
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'images')
+
+@app.context_processor
+def inject_now():
+    return {'now': datetime.now()}
+
+# Decorador para verificar rol master
+def master_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('user_role') == 'master':
+            flash('Acceso restringido: se requieren privilegios de administrador', 'danger')
+            return redirect(url_for('inicio'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/eventos_añadir', methods=['POST'])
+@master_required
+def eventos_añadir():
+    try:
+        required_fields = ['titulo', 'lugar', 'fecha', 'hora_inicio', 'hora_fin']
+        if not all(field in request.form for field in required_fields):
+            return jsonify({"success": False, "message": "Faltan campos requeridos"}), 400
+        
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        query = """
+            INSERT INTO Eventos (
+                titulo, descripcion, lugar, fecha, hora_inicio, hora_fin, 
+                destacado, id_usuario
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """
+        params = (
+            request.form['titulo'],
+            request.form.get('descripcion', ''),
+            request.form['lugar'],
+            request.form['fecha'],
+            request.form['hora_inicio'],
+            request.form['hora_fin'],
+            1 if request.form.get('destacado') == '1' else 0,
+            session.get('user_id')
+        )
+        
+        cursor.execute(query, params)
+        conn.commit()
+        
+        return jsonify({
+            "success": True,
+            "message": "Evento creado exitosamente",
+            "evento_id": cursor.execute("SELECT SCOPE_IDENTITY()").fetchval()
+        })
+        
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+@app.route('/api/eventos')
+def api_eventos():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT 
+                id, titulo, descripcion, lugar, 
+                CONVERT(varchar, fecha, 23) as fecha,
+                hora_inicio, hora_fin
+            FROM Eventos 
+            WHERE fecha >= CAST(GETDATE() AS DATE)
+            ORDER BY fecha, hora_inicio
+        """)
+        
+        eventos = [{
+            "title": row.titulo,
+            "start": f"{row.fecha}T{row.hora_inicio}",
+            "end": f"{row.fecha}T{row.hora_fin}",
+            "location": row.lugar,
+            "description": row.descripcion
+        } for row in cursor]
+        
+        return jsonify(eventos)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
 
 @app.context_processor
 def inject_now():

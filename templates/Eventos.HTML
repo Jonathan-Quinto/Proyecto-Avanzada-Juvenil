@@ -1,94 +1,231 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventos - Avanzada Juvenil</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="static/styles/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
-</head>
-<body>
-    <div class="container-nav">
-        <header>
-            <h1>Avanzada Juvenil</h1>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="Inicio.HTML">Inicio</a></li>
-                    <li><a href="eventos.html" class="active">Eventos</a></li>
-                    <li><a href="tienda.html">Tienda</a></li>
-                    <li><a href="registro.html">Registro</a></li>
-                    <li><a href="#ubicacion">Ubicación</a></li>
-                </ul>
-                <ul class="nav-social">
-                    <li><a href="#"><img src="Images/Instagram.png" alt="Instagram"></a></li>
-                </ul>
-            </nav>
-        </header>
-    </div>
+{% extends "base.html" %}
 
-    <section id="eventos" class="section">
-        <h2>Nuestros Eventos</h2>
-        <p>Conéctate con nuestra comunidad en estos encuentros especiales</p>
+{% block title %}Eventos - Avanzada Juvenil{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+<style>
+    /* Estilos para el modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+        background-color: var(--light);
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        width: 80%;
+        max-width: 600px;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-gray);
+    }
+
+    .close-modal:hover {
+        color: var(--primary);
+    }
+
+    .admin-actions {
+        margin-bottom: 1.5rem;
+        text-align: right;
+    }
+
+    /* Mejoras para el calendario */
+    .calendario-container {
+        background: var(--light);
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+    }
+
+    /* Estilos para la lista de eventos */
+    .lista-eventos {
+        background: var(--light);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+    }
+
+    .evento {
+        display: flex;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--dark);
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+    }
+
+    .evento:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .evento.destacado {
+        border-left: 4px solid var(--primary);
+    }
+
+    .fecha-evento {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 60px;
+        margin-right: 1rem;
+    }
+
+    .fecha-evento .dia {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .fecha-evento .mes {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: var(--text-gray);
+    }
+
+    .info-evento {
+        flex-grow: 1;
+    }
+
+    .info-evento h4 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: var(--primary-light);
+    }
+
+    .lugar, .hora {
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-pequeno {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="eventos" class="section">
+    <h2>Nuestros Eventos</h2>
+    <p>Conéctate con nuestra comunidad en estos encuentros especiales</p>
+    
+    {% if session.get('user_role') == 'master' %}
+    <div class="admin-actions">
+        <button id="abrirModalEvento" class="btn">
+            <i class="fas fa-plus"></i> Añadir Evento
+        </button>
+    </div>
+    {% endif %}
+    
+    <div class="eventos-contenedor">
+        <div class="calendario-container">
+            <div id="calendar"></div>
+        </div>
         
-        <div class="eventos-contenedor">
-            <div class="calendario-container">
-                <div id="calendar"></div>
+        <div class="lista-eventos">
+            <h3>Próximos Eventos</h3>
+            
+            {% for evento in eventos_proximos %}
+            <div class="evento {% if evento.destacado %}destacado{% endif %}">
+                <div class="fecha-evento">
+                    <span class="dia">{{ evento.fecha.day }}</span>
+                    <span class="mes">{{ evento.fecha.strftime('%b').upper() }}</span>
+                </div>
+                <div class="info-evento">
+                    <h4>{{ evento.titulo }}</h4>
+                    <p class="lugar">{{ evento.lugar }}</p>
+                    <p class="hora">{{ evento.hora_inicio }} - {{ evento.hora_fin }}</p>
+                    <button class="btn btn-pequeno">Más información</button>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <a href="#" class="btn">Ver todos los eventos</a>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para añadir evento (solo visible para master) -->
+{% if session.get('user_role') == 'master' %}
+<div id="modalEvento" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>Crear Nuevo Evento</h3>
+        <form id="formEvento">
+            <div class="form-group">
+                <label for="eventoTitulo">Título del Evento</label>
+                <input type="text" id="eventoTitulo" class="form-control" required>
             </div>
             
-            <div class="lista-eventos">
-                <h3>Próximos Eventos</h3>
-                
-                <div class="evento destacado">
-                    <div class="fecha-evento">
-                        <span class="dia">15</span>
-                        <span class="mes">JUN</span>
-                    </div>
-                    <div class="info-evento">
-                        <h4>Retiro Espiritual Juvenil</h4>
-                        <p class="lugar">Centro de Retiros Monte Carmelo</p>
-                        <p class="hora">9:00 AM - 6:00 PM</p>
-                        <button class="btn btn-pequeno">Registrarse</button>
-                    </div>
-                </div>
-                
-                <div class="evento">
-                    <div class="fecha-evento">
-                        <span class="dia">22</span>
-                        <span class="mes">JUN</span>
-                    </div>
-                    <div class="info-evento">
-                        <h4>Noche de Alabanza</h4>
-                        <p class="lugar">Templo Principal</p>
-                        <p class="hora">7:00 PM - 9:00 PM</p>
-                        <button class="btn btn-pequeno">Más información</button>
-                    </div>
-                </div>
-                
-                <div class="evento">
-                    <div class="fecha-evento">
-                        <span class="dia">29</span>
-                        <span class="mes">JUN</span>
-                    </div>
-                    <div class="info-evento">
-                        <h4>Taller: Cómo estudiar la Biblia</h4>
-                        <p class="lugar">Salón de Jóvenes</p>
-                        <p class="hora">4:00 PM - 6:00 PM</p>
-                        <button class="btn btn-pequeno">Más información</button>
-                    </div>
-                </div>
-                
-                <a href="#" class="btn">Ver todos los eventos</a>
+            <div class="form-group">
+                <label for="eventoDescripcion">Descripción</label>
+                <textarea id="eventoDescripcion" class="form-control" rows="4"></textarea>
             </div>
-        </div>
-    </section>
+            
+            <div class="form-group">
+                <label for="eventoLugar">Lugar</label>
+                <input type="text" id="eventoLugar" class="form-control" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group half-width">
+                    <label for="eventoFecha">Fecha</label>
+                    <input type="date" id="eventoFecha" class="form-control" required>
+                </div>
+                
+                <div class="form-group half-width">
+                    <label for="eventoHoraInicio">Hora Inicio</label>
+                    <input type="time" id="eventoHoraInicio" class="form-control" required>
+                </div>
+                
+                <div class="form-group half-width">
+                    <label for="eventoHoraFin">Hora Fin</label>
+                    <input type="time" id="eventoHoraFin" class="form-control" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="eventoImagen">Imagen (opcional)</label>
+                <input type="file" id="eventoImagen" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="eventoDestacado">
+                    Evento destacado
+                </label>
+            </div>
+            
+            <button type="submit" class="btn">
+                <i class="fas fa-calendar-plus"></i> Crear Evento
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
 
-    <footer>
-        <p>&copy; 2025 Avanzada Juvenil - Todos los derechos reservados</p>
-    </footer>
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/es.min.js"></script>
+<script src="{{ url_for('static', filename='js/eventos.js') }}"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/es.min.js"></script>
-    <script src="static/JS/eventos.js"></script>
-</body>
-</html>
+{% endblock %}

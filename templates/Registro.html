@@ -305,6 +305,12 @@
                     <i class="fas fa-envelope input-icon"></i>
                     <input type="email" id="email" class="form-control" placeholder="tucorreo@ejemplo.com" required>
                 </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required minlength="6">
+                </div>
                 
                 <div class="form-group">
                     <label for="phone" class="form-label">Teléfono (opcional)</label>
@@ -363,48 +369,61 @@
                 <div class="form-footer">
                     ¿Ya tienes una cuenta? <a href="Login.html">Inicia sesión aquí</a>
                 </div>
+                
             </form>
         </div>
     </div>
 
     <script>
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Simular envío del formulario
-            const submitBtn = document.querySelector('.btn-submit');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-            submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                alert('¡Registro exitoso! Bienvenido a Avanzada Juvenil');
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Registro completado';
-                submitBtn.style.background = 'var(--success)';
-                
-                // Redirigir después de 2 segundos
-                setTimeout(() => {
-                    window.location.href = "Inicio.html";
-                }, 2000);
-            }, 2000);
-            document.getElementById('registrationForm').addEventListener('submit', function(e) {
+       document.getElementById('registrationForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    const nombre = document.getElementById('fullName').value;
     const email = document.getElementById('email').value;
-    const age = document.getElementById('age').value;
+    const password = document.getElementById('password').value;
+    const submitBtn = document.querySelector('.btn-submit');
+
+    // Validaciones básicas
+    if (!nombre || !email || !password) {
+        alert('Por favor complete todos los campos');
+        return;
+    }
 
     if (!email.includes('@')) {
-        alert('Por favor, ingresa un correo electrónico válido.');
+        alert('Por favor ingrese un correo electrónico válido');
         return;
     }
 
-    if (age < 12 || age > 35) {
-        alert('La edad debe estar entre 12 y 35 años.');
-        return;
-    }
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+    submitBtn.disabled = true;
 
-    // Si todo está bien, enviar el formulario
-    this.submit();
+    // Enviar datos al servidor
+    fetch("{{ url_for('registro') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `fullName=${encodeURIComponent(nombre)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data.includes('Registro exitoso')) {
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Registro completado';
+            submitBtn.style.background = 'var(--success)';
+            setTimeout(() => {
+                window.location.href = "{{ url_for('login') }}";
+            }, 1500);
+        } else {
+            throw new Error(data);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error en el registro: ' + error.message);
+        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Registrarme';
+        submitBtn.disabled = false;
+    });
 });
-        });
     </script>
 </body>
 </html>

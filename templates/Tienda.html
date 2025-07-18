@@ -9,22 +9,28 @@
 </head>
 <body>
     <div class="container-nav">
-        <header>
-            <h1>Avanzada Juvenil</h1>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="Inicio.HTML">Inicio</a></li>
-                    <li><a href="eventos.html">Eventos</a></li>
-                    <li><a href="tienda.html" class="active">Tienda</a></li>
-                    <li><a href="registro.html">Registro</a></li>
+    <header>
+        <h1>Avanzada Juvenil</h1>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('inicio') }}" {% if request.endpoint == 'inicio' %}class="active"{% endif %}>Inicio</a></li>
+                <li><a href="{{ url_for('eventos') }}" {% if request.endpoint == 'eventos' %}class="active"{% endif %}>Eventos</a></li>
+                <li><a href="{{ url_for('tienda') }}" {% if request.endpoint == 'tienda' %}class="active"{% endif %}>Tienda</a></li>
+                <li class="nav-dropdown">
+                    <a href="{{ url_for('registro') }}" class="dropdown-trigger">Registro <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('registro') }}"><i class="fas fa-user-plus"></i> Crear cuenta</a>
+                        <a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</a>
+                    </div>
+                </li>
                     <li><a href="#ubicacion">Ubicación</a></li>
+                 <ul class="nav-links">
+                    <li><a href="https://www.instagram.com/avanzadajuvenil05/" target="_blank"><img src="{{ url_for('static', filename='Images/Instagram.png') }}" alt="Instagram"></a></li>
                 </ul>
-                <ul class="nav-social">
-                    <li><a href="#"><img src="/static/Images/Instagram.png" alt="Instagram"></a></li>
-                </ul>
-            </nav>
-        </header>
-    </div>
+            </ul>
+        </nav>
+    </header>
+</div>
 
     <section id="tienda" class="section">
         <h2>Nuestra Tienda</h2>
