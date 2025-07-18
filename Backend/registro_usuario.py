@@ -1,22 +1,20 @@
 from db_connection import get_connection
 
-def registrar_usuario(nombre, correo, contraseña, imagen_path):
+def registrar_usuario(nombre, correo, contraseña):
     conn = get_connection()
-    if conn is None:
-        return "Error al tratar de conectar a la base de datos."
+    if not conn:
+        return False
     
-    with open(imagen_path, 'rb') as file:
-        imagen_binaria = file.read()
-
     try:
         cursor = conn.cursor()
-        cursor.execute("""
-                       Insert Into Usuarios (NombreCompleto, Correo, Contraseña, Imagen)
-                          Values (?, ?, ?, ?)
-                       """, (nombre, correo, contraseña, imagen_binaria))
+        # Usamos el procedimiento almacenado
+        cursor.execute("EXEC sp_registrar_usuario ?, ?, ?", 
+                      (nombre, correo, contraseña))
         conn.commit()
-        print("Usuario registrado exitosamente.")
-    except Exception as e:
-        print("Error al registrar el usuario:", e)
+        return True
+    except pyodbc.Error as e:
+        print(f"Error al registrar usuario: {str(e)}")
+        return False
     finally:
-        conn.close()
+        if conn:
+            conn.close()
